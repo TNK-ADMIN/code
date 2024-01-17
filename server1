@@ -1,0 +1,60 @@
+def checkkey(key, data):
+    try:
+        crypto_instance = Crypto(public_key)
+        encrypted_text = crypto_instance.encrypt(str(data))
+        encrypted_text_base64 = base64.b64encode(encrypted_text.encode()).decode()
+        
+        data = {'data': encrypted_text_base64, 'key': key}
+        encrypt_response = requests.post(server+'/checkkey', data=data).json()
+        #print(encrypt_data)
+        if encrypt_response['status'] and key == encrypt_response['key']:
+            return True
+        else:
+            return False
+    except:
+        try:
+            os.remove('keytnk.txt')
+        except:
+            pass
+
+
+def key():
+    clear()
+    banner()
+    ngay = int(datetime.datetime.now().strftime('%d'))
+    key1 = str(ngay * 24122006 + 241226)
+    key = '00000' + key1
+    hashed_key = hash_and_truncate(key, 10)
+    if not os.path.exists('keytnk.txt'):
+        encrypted_text = crypto_instance.encrypt(hashed_key)
+        data = {'data': encrypted_text}
+        encrypt_response =requests.post(server+'/key', data=data).json()
+        clear()
+        banner()
+        #print(encrypt_response)
+        print(f"""~[+]=> Link Vượt Key: {encrypt_response['msg']}""")
+        password = input('[●] ➩ Nhập Key: ')
+        check = checkkey(password, 'hi')
+        if check == True:
+            with open('keytnk.txt', 'w') as f:
+                f.write(password)
+        else:
+            try:
+                os.remove('keytnk.txt')
+            except:
+                pass
+            print("[●] Key Không Hợp Lệ. Xin Thử Lại.")
+            quit()
+    with open('keytnk.txt', 'r') as f:
+        password = f.read()
+        check = checkkey(password, 'hi')
+        if check == True:
+            with open('keytnk.txt', 'w') as f:
+                f.write(password)
+        else:
+            print("[●] Key Không Hợp Lệ. Xin Thử Lại.")
+            try:
+                os.remove('keytnk.txt')
+            except:
+                pass
+            quit()
